@@ -1,8 +1,7 @@
 # Amazon Sales Analysis
 
 The same small Amazon sales dataset (100 orders, 2010-2017, across 7 regions and 12 item types)
-analyzed three ways: SQL, Python (pandas), and Power BI -- matching what this repo's name has
-always promised, though the SQL half was missing until now.
+analyzed three ways: SQL, Python (pandas), and Power BI.
 
 ## Structure
 
@@ -29,11 +28,10 @@ function examples (a running revenue total, and ranking each region's top item t
 
 `sql_analysis.ipynb` doesn't just print these queries -- it loads the CSV into a real in-memory
 SQLite database (schema in `schema.sql`) and executes every query in `queries.sql` against it,
-so the results shown are genuine SQL execution output, not a pandas re-implementation. One real
-data-quality issue was found and handled explicitly while building this: 34 of the 100 rows use
-`M-D-YYYY` (hyphens) instead of the dominant `M/D/YYYY` (slashes) for dates -- verified this is a
-separator inconsistency, not a genuine day-first/month-first ambiguity (every one of those 34
-rows has a first component `<=12`), and normalized accordingly before loading.
+so the results shown are genuine SQL execution output, not a pandas re-implementation. Dates are
+normalized before loading: 34 of the 100 rows use `M-D-YYYY` (hyphens) instead of the dominant
+`M/D/YYYY` (slashes), a separator inconsistency rather than a day-first/month-first ambiguity
+(every one of those 34 rows has a first component `<=12`).
 
 A couple of the actual findings: high-priority orders ship *faster* on average than low-priority
 ones (21.4 vs. 23.6 days) -- the priority label does correspond to real handling speed. Clothes
@@ -53,9 +51,8 @@ jupyter nbconvert --to notebook --execute --inplace sql_analysis.ipynb
 `python_eda_analysis.ipynb` -- pandas-based exploration: summary stats, missing-value handling,
 average price/cost by item type, processing time by sales channel, revenue trends, and several
 matplotlib/seaborn visualizations. Runs in Jupyter or Google Colab (it's a standard `.ipynb`,
-nothing environment-specific). One compatibility fix was needed: `data.fillna(data.mean())`
-crashed under current pandas (which stopped silently skipping non-numeric columns during
-aggregation) -- fixed to `data.fillna(data.mean(numeric_only=True))`.
+nothing environment-specific). Missing-value handling uses
+`data.fillna(data.mean(numeric_only=True))` to fill only numeric columns.
 
 ## Power BI dashboard (`powerbi/`)
 
